@@ -5,14 +5,14 @@ class Artifact(GameEntity):
 
     state_props = ['x', 'y', 'r', 'hg', 'is_carried', 'last_touch']
 
-    def __init__(self, x, y, hg=0):
+    def __init__(self, x, y, hg=None):
         """
         The Artifact is picked up by Bots and deposited in a DropPort for points.
 
         :param x: x coordinate of the artifact
         :param y: y coordinate of the artifact
         :param hg: the team that can score points with the artifact; 0 for an artifact that can be used
-         by all teams (integer)
+         by all teams (integer or None)
 
         """
 

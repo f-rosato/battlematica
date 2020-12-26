@@ -2,7 +2,7 @@ from battlematica.core.game_entity import GameEntity
 
 
 class DropPort(GameEntity):
-    def __init__(self, x, y, hg=0):
+    def __init__(self, x, y, hg=None):
 
         """
         The DropPort is the object where the Bots can deposit Artifacts to score points.
@@ -10,7 +10,7 @@ class DropPort(GameEntity):
         :param x: x coordinate of the drop port
         :param y: y coordinate of the drop port
         :param hg: the team that can use the drop port; 0 for a drop port that can be used
-         by all teams (integer)
+         by all teams (integer or None)
 
         """
 
