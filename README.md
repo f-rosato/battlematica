@@ -49,7 +49,7 @@ Battlematica lives, as I hope, at the intersection between fun and serious resea
 
 ## I'll read later, how do I just start a game?
 
-`python run_game.py -f 3v1_square.json  -t 1500  -d`
+`python3 run_game.py -f 3v1_square.json  -t 1200  -d`
 
 ---
 Contributions are welcome!

@@ -1,6 +1,6 @@
 {
-  "max_health": 2,
-  "max_shield": 1,
+  "max_health": 200,
+  "max_shield": 100,
   "firing_period": 4,
   "bullet_spread": 16,
   "bullet_speed": 30,
