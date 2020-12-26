@@ -19,7 +19,7 @@ Battlematica ships with a library of primitives that aids you in writing Gladiab
 
 ## Can I see the pew-pew?
 
-![Screenshot](screenshot.png)
+![alt text](https://github.com/f-rosato/battlematica/blob/master/screenshot.png?raw=true)
 
 Battlematica includes optional 2D graphics output through the [arcade](https://arcade.academy/) library.
  
