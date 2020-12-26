@@ -1,5 +1,5 @@
-from sample_ai.shoot_retire import shoot_retire
-from sample_ai.harvest import harvest
+from battlematica.sample_ai.shoot_retire import shoot_retire
+from battlematica.sample_ai.harvest import harvest
 
 
 def shoot_then_harvest(self, state):

@@ -1,5 +1,5 @@
 {
-  "ai_folder":"sample_ai",
+  "ai_folder":"battlematica/sample_ai",
   "bots_folder":"sample_bots",
   "battlefield_size":[
     900,

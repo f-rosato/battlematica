@@ -1,5 +1,5 @@
 from battlematica import *
-from sample_ai import shoot_then_harvest
+from battlematica.sample_ai import shoot_then_harvest
 
 
 TEAM_1 = 1
