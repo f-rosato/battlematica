@@ -45,7 +45,7 @@ Battlematica lives, as I hope, at the intersection between fun and serious resea
 
 ## How do I use it?
 
-Read the docs!
+![Read the docs!](https://battlematica.readthedocs.io/en/latest/)
 
 ## I'll read later, how do I just start a game?
 
