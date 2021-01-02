@@ -1,10 +1,9 @@
 class StateQuerier:
-    def __init__(self, bot, state):
+    def __init__(self, state):
 
         """The StateQuerier is initialized with a Bot instance and a state snapshot.
         You then call it with a sequence of functions."""
 
-        self.bot = bot
         self.state = state
 
     def __call__(self, *args):
@@ -20,12 +19,12 @@ class StateQuerier:
 
          """
 
-        result = args[0](self.bot, self.state)
+        result = args[0](self.state)
 
         for passage in args[1:]:
-            if result:
-                result = passage(result)
-            else:
+            if result is None:
                 break
+            else:
+                result = passage(result)
 
         return result

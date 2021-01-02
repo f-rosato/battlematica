@@ -4,7 +4,7 @@
   "firing_period": 10,
   "bullet_spread": 7,
   "bullet_speed": 40,
-  "bullet_range": 800,
+  "bullet_range": 400,
   "bullet_dmg": 70,
   "walk_speed": 3.0,
   "crawl_speed": 1.5,

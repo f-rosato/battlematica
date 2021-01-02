@@ -1,10 +1,10 @@
-from battlematica import Library, StateQuerier
+from battlematica import StateQuerier
+from battlematica import library as lib
 
 
 def shoot_retire(self, state):
 
-    lib = Library()
-    query = StateQuerier(self, state)
+    query = StateQuerier(state)
 
     closest_enemy = query(lib.i_bots(),
                           lib.f_not_of_teams(self.hg),

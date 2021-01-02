@@ -42,13 +42,6 @@ DropPort
    :special-members:
    :exclude-members: __weakref__
 
-Library
--------
-
-.. autoclass:: battlematica.Library
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
 
 StateQuerier
 ------------
@@ -57,3 +50,14 @@ StateQuerier
    :members:
    :special-members:
    :exclude-members: __weakref__
+
+
+library
+-------
+
+.. automodule:: battlematica.library
+   :imported-members:
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :exclude-members: distance, partializable, wraps
