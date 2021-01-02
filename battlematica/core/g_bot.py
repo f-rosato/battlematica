@@ -81,7 +81,7 @@ class Bot(GameEntity):
         :param r: rotation of the bot in degrees (0 points right)
         :param hg: the team of the bot (integer)
         :param max_health: it's the total HP of the bot.
-        :param max_shield: the bots have a shield that gets depleted as damage is taken continuously, but recharges when damage is not taken for a little bit. This is the maximum shield amount. Think of rechargeable HP. Health HP will start to be removed only after the shield is depleted.
+        :param max_shield: it's the total shield of the bot.
         :param firing_period: it's the amount of ticks that the bot needs to load the next shot.
         :param bullet_spread: angular spread of the bullets. A spread of 0 means perfect aim.
         :param bullet_speed: the speed in u/tick at which the bullet moves

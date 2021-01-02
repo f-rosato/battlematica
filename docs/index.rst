@@ -20,11 +20,13 @@ It's licensed under GPL-v3.
    :maxdepth: 2
    :caption: Contents:
 
-   concepts
    quickstart
+   game_mechanics
+   game_state
    writing_ai
    setupgame
    asset
+   architecture
    api
 
 

@@ -18,8 +18,6 @@ class Library:
         StateQuerier. The methods might accept parameters (typical example: x, y in functions
         like closest_to) that will be built in into the returned function.
 
-        It's easier to use than to explain.
-
         """
 
         self.library = {}

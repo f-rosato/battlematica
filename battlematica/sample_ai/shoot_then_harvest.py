@@ -8,4 +8,3 @@ def shoot_then_harvest(self, state):
         a = f(self, state)
         if a is not None:
             return a
-    return 'loiter', self.tx, self.ty
