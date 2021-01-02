@@ -37,10 +37,6 @@ def f_position_in_circle(elems, x, y, r):
 
     return [e for e in elems if e_in_c(e)]
 
-def w(x, y, r):
-    def q(elems):
-        return f_position_in_circle(elems, x ,y ,r)
-    return q
 
 @partializable
 def f_position_out_of_circle(elems, x, y, r):
