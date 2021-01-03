@@ -29,6 +29,7 @@ class Bot(GameEntity):
 
         "max_health",
         "max_shield",
+        "size",
         "firing_period",
         "bullet_spread",
         "bullet_speed",
@@ -61,8 +62,9 @@ class Bot(GameEntity):
             x, y, r, hg,
             max_health=400.0,
             max_shield=200.0,
+            size=0.5,
             firing_period=10.0,
-            bullet_spread=7.0,
+            bullet_spread=2.5,
             bullet_speed=40.0,
             bullet_range=800.0,
             bullet_dmg=70.0,
@@ -82,6 +84,7 @@ class Bot(GameEntity):
         :param hg: the team of the bot (integer)
         :param max_health: it's the total HP of the bot.
         :param max_shield: it's the total shield of the bot.
+        :param size: a float indicating the phisical size of the bot (influences hitbox).
         :param firing_period: it's the amount of ticks that the bot needs to load the next shot.
         :param bullet_spread: angular spread of the bullets. A spread of 0 means perfect aim.
         :param bullet_speed: the speed in u/tick at which the bullet moves
@@ -112,6 +115,7 @@ class Bot(GameEntity):
         self.shield_reload_speed = shield_reload_speed
         self.shield_reload_dead_time = shield_reload_dead_time
         self.graphics = graphics
+        self.size = size
 
         # health
         self.health = self.max_health

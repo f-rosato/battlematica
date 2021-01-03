@@ -68,7 +68,7 @@ class GCWindow(ad.Window):
             present_ids.append(b['id'])
             if b['id'] not in self.ids:
                 self.ids.append(b['id'])
-                bot_sprite = SpriteM90(self.ac.bot(team, g['body_type']), g['size'])
+                bot_sprite = SpriteM90(self.ac.bot(team, g['body_type']), b['size'])
                 self.sprite_list.append(bot_sprite)
                 self.spritedict[b['id']] = bot_sprite
             else:

@@ -49,10 +49,17 @@ class _Bullet(GameEntity):
         self.blast_sprite = blast_sprite
         self.spread = spread
 
-        self.tx = tx + 2*(np.random.rand()-.5) * self.spread
-        self.ty = ty + 2*(np.random.rand()-.5) * self.spread
+        exact_angle = angle(x, y, tx, ty)
+        dist = distance(x, y, tx, ty)
+        realized_angle = exact_angle + 2*(np.random.rand()-.5) * self.spread
 
-        self.r = angle(x, y, self.tx, self.ty)
+        realized_tx = x + dist * np.cos(np.deg2rad(realized_angle))
+        realized_ty = y + dist * np.sin(np.deg2rad(realized_angle))
+
+        self.tx = realized_tx
+        self.ty = realized_ty
+
+        self.r = realized_angle
 
         self.target_reached = False
         self.out_of_range = False

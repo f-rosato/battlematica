@@ -15,6 +15,9 @@ def the_correct_turn(a_start, a_target):
 
 
 def angle(x, y, tx, ty):
+
+    # returns degrees
+
     delta_x = tx - x
     delta_y = ty - y
     theta_radians = np.arctan2(delta_y, delta_x)

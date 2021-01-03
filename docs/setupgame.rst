@@ -23,8 +23,7 @@ This section of the json file is used to define properties that have no effect o
       - `body_type`: integer that selects the sprite for the bot as `/bots/team_*/...{body_type}.png`
       - `bullet_type`: integer that selects the sprite for the bullet fired by the bot as `/bullets/...{bullet_type}.png`
       - `bullet_blast_type`: integer that selects the sprite for the bullet blast as `/blasts/...{blast_type}.png`
-      - `size`: floating point scaling factor for the body
-      - `bullet_size`: floating point scaling factor for the bullet
+      - `bullet_size`: floating point scaling factor for the bullet sprite
 
 Write a game .json file
 '''''''''''''''''''''''

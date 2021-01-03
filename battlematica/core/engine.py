@@ -6,7 +6,7 @@ from multiprocessing import Queue, Event
 
 import numpy as np
 
-from .constants import PERIOD_OVER_TOKEN, BLAST_RADIUS, SEED, PORT_TOLERANCE
+from .constants import PERIOD_OVER_TOKEN, BASE_BOT_RADIUS, SEED, PORT_TOLERANCE
 from .g_artifact import Artifact
 from .g_bot import Bot
 from .g_bullet import _Bullet
@@ -99,9 +99,9 @@ class GameEngine:
         self.sync_signals.append(e)
         return e
 
-    def _bots_in_radius(self, x, y, r):
+    def _bots_in_hitrange(self, x, y):
         for bot in self.bots:
-            if distance(x, y, bot.x, bot.y) < r:
+            if distance(x, y, bot.x, bot.y) < bot.size * BASE_BOT_RADIUS:
                 yield bot
 
     def _artifacts_near(self, x, y):
@@ -287,7 +287,7 @@ class GameEngine:
                         self.disappearing_bullets.append(bullet)
 
                     elif a == 'explode':
-                        for b in self._bots_in_radius(bullet.x, bullet.y, BLAST_RADIUS):
+                        for b in self._bots_in_hitrange(bullet.x, bullet.y):
                             if b.hg != bullet.hg:  # not friendly fire
                                 b._take_dmg(bullet.dmg)
                                 break
