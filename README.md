@@ -40,7 +40,6 @@ Some ideas that you can explore:
 - neural networks
 - reinforcement learning
 - opponent modeling
-- hijack an AI and read joypad inputs
 - ...whatever you fancy to experiment with!
 
 Battlematica lives, as I hope, at the intersection between fun and serious research in multiagent systems, AI and the likes. If you plan to use it the latter way, let me know!

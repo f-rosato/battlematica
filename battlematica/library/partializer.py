@@ -1,6 +1,8 @@
 from functools import wraps
 from inspect import signature
 
+N_DYNAMIC_ARGS = 1
+
 
 def partializable(fn):
     @wraps(fn)
@@ -12,7 +14,7 @@ def partializable(fn):
 
     # Override signature
     sig = signature(fn)
-    sig = sig.replace(parameters=tuple(sig.parameters.values())[1:])
+    sig = sig.replace(parameters=tuple(sig.parameters.values())[N_DYNAMIC_ARGS:])
     arg_partializer.__signature__ = sig
 
     return arg_partializer

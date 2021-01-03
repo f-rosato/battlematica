@@ -10,7 +10,6 @@ FIELD_SIZE = [800, 700]
 
 BOT_GRAPHICS = {
       "body_type": 2,
-      "size": 0.55,
       "bullet_type": 3,
       "bullet_size": 0.7,
       "bullet_blast_type": 1

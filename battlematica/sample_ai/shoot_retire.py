@@ -27,7 +27,7 @@ def shoot_retire(self, state):
                lib.f_not_of_teams(self.hg),
                lib.f_position_in_circle(self.x, self.y, self.bullet_range * .8),
                lib.s_closest_to_xy(self.x, self.y))
-    if tg:
+    if tg is not None:
         return 'shoot', tg['x'], tg['y']
 
     # go to nearest enemy

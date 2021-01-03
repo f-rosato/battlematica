@@ -217,7 +217,6 @@ class GameEngine:
                 e.clear()
 
             self.tick += 1
-            print(self.tick)
 
             new_bullets = []
             self.disappearing_bots.clear()
@@ -266,10 +265,10 @@ class GameEngine:
                             for dp in self._drop_ports_near(ar.x, ar.y):
                                 if ar.hg == dp.hg or dp.hg is None:
                                     self.disappearing_artifacts.append(ar)
-                                    self.carried_artifacts.remove(ar)
-                                    ar.is_carried = False
-                                    bot.carry = None
                                     break
+                            self.carried_artifacts.remove(ar)
+                            ar.is_carried = False
+                            bot.carry = None
 
             for ar in self.disappearing_artifacts:
                 self.artifacts.remove(ar)

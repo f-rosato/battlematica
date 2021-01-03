@@ -2,6 +2,8 @@ import numpy as np
 
 from .partializer import partializable
 
+from ..core.geometry_primitives import the_correct_turn
+
 
 # team
 @partializable
@@ -36,6 +38,18 @@ def f_position_in_circle(elems, x, y, r):
         return np.sqrt((x2 - x)**2 + (y2 - y)**2) <= r
 
     return [e for e in elems if e_in_c(e)]
+
+
+@partializable
+def f_position_in_cone(elems, x, y, angle, a_half_range):
+
+    in_cone_elems = []
+    for e in elems:
+        e_angle = np.rad2deg(np.angle(e['x']-x + 1j*(e['y']-y)))
+
+        if np.abs(the_correct_turn(angle, e_angle)) < a_half_range:
+            in_cone_elems.append(e)
+    return in_cone_elems
 
 
 @partializable
