@@ -14,7 +14,7 @@ SCREEN_TITLE = "Bots that beat the shit out of each other"
 
 
 class GCWindow(ad.Window):
-    def __init__(self, X, Y, q, asset_container, update_rate=1 / 60):
+    def __init__(self, X, Y, q, asset_container, sync_signal=None, update_rate=1 / 60):
         super().__init__(X, Y, SCREEN_TITLE)
         self.limits = [X, Y]
         self.ids = []
@@ -32,6 +32,7 @@ class GCWindow(ad.Window):
         self.ac = asset_container
         self.current_score = {}
         self.current_tick = 0
+        self.sync_signal = sync_signal
 
     def setup(self):
         self.background = ad.load_texture(self.ac.background())
@@ -234,4 +235,8 @@ class GCWindow(ad.Window):
         # draw tick
         tick_str = f'tick: {self.current_tick}'
         ad.draw_text(tick_str, 30, 30, ad.color.DARK_YELLOW, 14)
+
+        # set signal
+        if self.sync_signal is not None:
+            self.sync_signal.set()
 

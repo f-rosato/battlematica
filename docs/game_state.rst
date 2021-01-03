@@ -2,6 +2,7 @@ Game State
 ==========
 
 The Game State is a complete description of the current condition of the game. In Battlematica, Bots decide through their assigned AI what to do based on the State, that is updated at every tick. The State is a straightforward piece of data: it's a nested dictionary with the following keys:
+
     - **tick**: the current tick (see :ref:`Time and space`)
     - **score**: the current score
     - **bots**: a list of the state of each Bot in the game. The state of the bots comprises both static properties (such as max shield, etc.) and their current condition (x, y, current action, target x, target y, current hp, etc.).
@@ -9,7 +10,6 @@ The Game State is a complete description of the current condition of the game. I
     - **drop_ports**: a list of the Drop Ports on the field
     - **bullets**: a list of the bullets currently flying. This information is necessary to completely descrive the state of the Game, but is tipically not used inside AIs.
     - **d_artifacts**, **d_bots**, **d_bullets**: helper lists in which the relative object types are put if they disappeared in the last frame (a bot disappears when its HP reaches 0; an artifact disappears when it is dropped in a Drop Port; a bullet disappears when it reaches it target, exploding, or when it travels beyond the firing range of the bot that fired it, losing all it power).
-
 
 
 Example:

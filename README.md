@@ -1,3 +1,5 @@
+[![Documentation Status](https://readthedocs.org/projects/battlematica/badge/?version=latest)](https://battlematica.readthedocs.io/en/latest/?badge=latest)
+
 # Battlematica
 
 ## What is this?

@@ -2,7 +2,7 @@ import importlib.util
 import json
 import os.path
 from copy import deepcopy
-from multiprocessing import Queue
+from multiprocessing import Queue, Event
 
 import numpy as np
 
@@ -35,6 +35,7 @@ class GameEngine:
         self.tick = 0
 
         self.state_queues = []
+        self.sync_signals = []
 
         self.score = {}
         self.score_fn = None
@@ -88,6 +89,15 @@ class GameEngine:
         q = Queue()
         self.state_queues.append(q)
         return q
+
+    def give_sync_signal(self):
+
+        """Creates and returns a sync signal that blocks the execution of the next tick
+        until it is set again."""
+
+        e = Event()
+        self.sync_signals.append(e)
+        return e
 
     def _bots_in_radius(self, x, y, r):
         for bot in self.bots:
@@ -200,7 +210,14 @@ class GameEngine:
         """
 
         while self.tick < until_tick:
+
+            # wait for sync signals, if any
+            for e in self.sync_signals:
+                e.wait()
+                e.clear()
+
             self.tick += 1
+            print(self.tick)
 
             new_bullets = []
             self.disappearing_bots.clear()
