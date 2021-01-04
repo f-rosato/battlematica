@@ -1,111 +1,150 @@
 import numpy as np
 
-from .partializer import partializable
-
 from ..core.geometry_primitives import the_correct_turn
 
 
 # team
-@partializable
-def f_of_teams(elems, *acceptable_teams):
-    return [x for x in elems if x['hg'] in acceptable_teams]
+
+def f_of_teams(*acceptable_teams):
+    def _f_of_teams(elems):
+        return [x for x in elems if x['hg'] in acceptable_teams]
+
+    return _f_of_teams
 
 
-@partializable
-def f_not_of_teams(elems, *unacceptable_teams):
-    return [x for x in elems if x['hg'] not in unacceptable_teams]
+def f_not_of_teams(*unacceptable_teams):
+    def _f_not_of_teams(elems):
+        return [x for x in elems if x['hg'] not in unacceptable_teams]
+
+    return _f_not_of_teams
 
 
 # positional
-@partializable
-def f_position_in_ring(elems, x, y, r1, r2):
-    inr2 = f_position_in_circle(elems, x, y, r2)
-    outr1 = f_position_out_of_circle(elems, x, y, r1)
-    return list(set(inr2).intersection(set(outr1)))
+
+def f_position_in_ring(x, y, r1, r2):
+    def _f_position_in_ring(elems):
+        inr2 = f_position_in_circle(x, y, r2)(elems)
+        outr1 = f_position_out_of_circle(x, y, r1)(elems)
+        return list(set(inr2).intersection(set(outr1)))
+
+    return _f_position_in_ring
 
 
-@partializable
-def f_position_in_rectangle(elems, l, r, t, b):
-    return [e for e in elems if l <= e['x'] <= r and b <= e['y'] <= t]
+def f_position_in_rectangle(l, r, t, b):
+    def _f_position_in_rectangle(elems):
+        return [e for e in elems if l <= e['x'] <= r and b <= e['y'] <= t]
+
+    return _f_position_in_rectangle
 
 
-@partializable
-def f_position_in_circle(elems, x, y, r):
+def f_position_in_circle(x, y, r):
+    def _f_position_in_circle(elems):
+        def e_in_c(e):
+            x2 = e['x']
+            y2 = e['y']
+            return np.sqrt((x2 - x) ** 2 + (y2 - y) ** 2) <= r
 
-    def e_in_c(e):
-        x2 = e['x']
-        y2 = e['y']
-        return np.sqrt((x2 - x)**2 + (y2 - y)**2) <= r
+        return [e for e in elems if e_in_c(e)]
 
-    return [e for e in elems if e_in_c(e)]
-
-
-@partializable
-def f_position_in_cone(elems, x, y, angle, a_half_range):
-
-    in_cone_elems = []
-    for e in elems:
-        e_angle = np.rad2deg(np.angle(e['x']-x + 1j*(e['y']-y)))
-
-        if np.abs(the_correct_turn(angle, e_angle)) < a_half_range:
-            in_cone_elems.append(e)
-    return in_cone_elems
+    return _f_position_in_circle
 
 
-@partializable
-def f_position_out_of_circle(elems, x, y, r):
-    return [e for e in elems if e not in f_position_in_circle(elems, x, y, r)]
+def f_position_in_cone(x, y, angle, a_half_range):
+    def _f_position_in_cone(elems):
+
+        in_cone_elems = []
+        for e in elems:
+            e_angle = np.rad2deg(np.angle(e['x'] - x + 1j * (e['y'] - y)))
+
+            if np.abs(the_correct_turn(angle, e_angle)) < a_half_range:
+                in_cone_elems.append(e)
+        return in_cone_elems
+
+    return _f_position_in_cone
 
 
-@partializable
-def f_position_out_of_rectangle(elems, l, r, t, b):
-    return list(set(elems) - set(f_position_in_rectangle(elems, l, r, t, b)))
+def f_position_out_of_circle(x, y, r):
+    def _f_position_out_of_circle(elems):
+
+        pic = f_position_in_circle(x, y, r)
+        return [e for e in elems if e not in pic(elems)]
+
+    return _f_position_out_of_circle
+
+
+def f_position_out_of_rectangle(l, r, t, b):
+    def _f_position_out_of_rectangle(elems):
+
+        pir = f_position_in_rectangle(l, r, t, b)
+        return list(set(elems) - set(pir(elems)))
+
+    return _f_position_out_of_rectangle
 
 
 # health
-@partializable
-def f_health_between(elems, h1, h2):
-    return [e for e in elems if h1 <= e['health'] <= h2]
+
+def f_health_between(h1, h2):
+    def _f_health_between(elems):
+        return [e for e in elems if h1 <= e['health'] <= h2]
+
+    return _f_health_between
 
 
-@partializable
-def f_shield_between(elems, s1, s2):
-    return [e for e in elems if s1 <= e['shield'] <= s2]
+def f_shield_between(s1, s2):
+    def _f_shield_between(elems):
+        return [e for e in elems if s1 <= e['shield'] <= s2]
+
+    return _f_shield_between
 
 
-@partializable
-def f_health_between_pct(elems, h1, h2):
-    return [e for e in elems if h1 <= e['health']/e['max_health'] <= h2]
+def f_health_between_pct(h1, h2):
+    def _f_health_between_pct(elems):
+        return [e for e in elems if h1 <= e['health'] / e['max_health'] <= h2]
+
+    return _f_health_between_pct
 
 
-@partializable
-def f_shield_between_pct(elems, s1, s2):
-    return [e for e in elems if s1 <= e['shield']/e['max_shield'] <= s2]
+def f_shield_between_pct(s1, s2):
+    def _f_shield_between_pct(elems):
+        return [e for e in elems if s1 <= e['shield'] / e['max_shield'] <= s2]
+
+    return _f_shield_between_pct
 
 
 # generic properties
-@partializable
-def f_property_between(elems, prop, p1, p2):
-    return [e for e in elems if p1 <= e[prop] <= p2]
+
+def f_property_between(prop, p1, p2):
+    def _f_property_between(elems):
+        return [e for e in elems if p1 <= e[prop] <= p2]
+
+    return _f_property_between
 
 
-# behavior
-@partializable
-def f_has_target(elems, x, y):
-    return [e for e in elems if e['tx'] is not None and
-            np.isclose(e['tx'], x) and np.isclose(e['ty'], y)]
+# behavioral
+
+def f_has_target(x, y):
+    def _f_has_target(elems):
+        return [e for e in elems if e['tx'] is not None and np.isclose(e['tx'], x) and np.isclose(e['ty'], y)]
+
+    return _f_has_target
 
 
-@partializable
-def f_current_action(elems, ca):
-    return [e for e in elems if e['ca'] == ca]
+def f_current_action(ca):
+    def _f_current_action(elems):
+        return [e for e in elems if e['ca'] == ca]
+
+    return _f_current_action
 
 
-@partializable
-def f_is_not_carrying(elems):
-    return [e for e in elems if not e['is_carrying']]
+def f_is_not_carrying():
+    def _f_is_not_carrying(elems):
+        return [e for e in elems if not e['is_carrying']]
+
+    return _f_is_not_carrying
 
 
-@partializable
-def f_is_carrying(elems):
-    return [e for e in elems if e['is_carrying']]
+def f_is_carrying():
+    def _f_is_carrying(elems):
+        return [e for e in elems if e['is_carrying']]
+
+    return _f_is_carrying

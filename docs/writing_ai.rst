@@ -34,10 +34,6 @@ We'll use a very basic AI, `shoot_retire` (included in the `sample_ai` submodule
 
 You operate by using the functions found in the :ref:`library` submodule and :ref:`StateQuerier`. These are used to get one or more objects from the field (enemies, artifacts, allies...) according to a set of criterions that "sieve" the state. The functions contained in the :ref:`library` submodule are divided in identifiers, filters and selectors.
 
-    - **identifiers** have prefix `i_` and select the class of objects you want to query: bots, artifacts or drop ports.
-    - **filters** have prefix `f_` and are functions that narrow down a list of objects. A sequence of filters is applied to the totality of the objects contained in the :ref:`Game State` in order to get a list of suitable objects.
-    - **selectors** have prefix `s_` and their purpose is to select exactly one element from a list according to the minimization or maximization of some criterion; if a selector is applied to an already empty list, the empty list just passes through.
-
 A sequence of functions from these are passed as arguments of calls to the instance of :ref:`StateQuerier`.
 
 .. Important::

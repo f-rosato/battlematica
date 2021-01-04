@@ -1,22 +1,25 @@
-from .partializer import partializable
-
 """These functions identify a group of GameEntities from a State."""
 
 
-@partializable
-def i_bots(state):
-    bts = state['bots']
-    return bts
+def i_bots():
+    def _i_bots(state):
+        bts = state['bots']
+        return bts
+
+    return _i_bots
 
 
-@partializable
-def i_artifacts(state):
-    af = state['artifacts']
-    af_free = [x for x in af if not x['is_carried']]
-    return af_free
+def i_artifacts():
+    def _i_artifacts(state):
+        af = state['artifacts']
+        af_free = [x for x in af if not x['is_carried']]
+        return af_free
+    return _i_artifacts
 
 
-@partializable
-def i_drop_ports(state):
-    af = state['drop_ports']
-    return af
+def i_drop_ports():
+    def _i_drop_ports(state):
+        af = state['drop_ports']
+        return af
+
+    return _i_drop_ports

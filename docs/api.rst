@@ -55,9 +55,15 @@ StateQuerier
 library
 -------
 
+The library submodule contains a collections of higher level functions used in writing AIs together with a StateQuerier. The functions are divided in identifiers, filters and selectors.
+
+    - **identifiers** have prefix `i_` and select the class of objects you want to query: bots, artifacts or drop ports.
+    - **filters** have prefix `f_` and are functions that narrow down a list of objects. A sequence of filters is applied to the totality of the objects contained in the :ref:`Game State` in order to get a list of suitable objects.
+    - **selectors** have prefix `s_` and their purpose is to select exactly one element from a list according to the minimization or maximization of some criterion; if a selector is applied to an already empty list, the selector returns `None`.
+
 .. automodule:: battlematica.library
    :imported-members:
    :members:
    :undoc-members:
    :show-inheritance:
-   :exclude-members: distance, partializable, wraps
+   :exclude-members: distance, wraps, the_correct_turn
