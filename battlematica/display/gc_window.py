@@ -86,14 +86,20 @@ class GCWindow(ad.Window):
         # update artifacts
         for arty in disp_state['artifacts']:
             team = arty['hg']
+            if arty['is_carried']:
+                ssize = .35
+            else:
+                ssize = .55
             present_ids.append(arty['id'])
             if arty['id'] not in self.ids:
                 self.ids.append(arty['id'])
-                arti_sprite = SpriteM90(self.ac.artifact(team), .55)
+                arti_sprite = SpriteM90(self.ac.artifact(team), ssize)
                 self.artifact_list.append(arti_sprite)
                 self.spritedict[arty['id']] = arti_sprite
             else:
                 arti_sprite = self.spritedict[arty['id']]
+
+            arti_sprite.scale = ssize
 
             arti_sprite.center_x = arty['x']
             arti_sprite.center_y = arty['y']

@@ -21,7 +21,7 @@ class GameDisplayProcess(mp.Process):
         :param engine: the GameEngine instance to display
         :param speed: a multiplier representing the display speed. Normally the target speed is 60 ticks/s.
         :param sync: whether to execute the engine synchronously with the display (the next tick is not produced
-        before the current one is displayed). Useful if you want to interact with the game in some way.
+            before the current one is displayed). Useful if you want to interact with the game in some way.
         :param asset_archive: optional path to an alternative asset archive
 
         """

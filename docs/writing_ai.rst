@@ -27,7 +27,7 @@ You are free to write whatever you like inside the function! You can write bots 
 
 You can also write AIs according to a logic similar to the one found in Gladiabots.  The Gladiabots philosophy is great and strikes a good balance between fun, power, interpretability and conceptualization ease. Very generally, you write in descending priority and according to a conditional control flow a series of object selections and, if a suitable element is found, execute actions on it.
 
-We'll use a very basic AI, `shoot_retire` (included in the :ref:`sample_ai` submodule) to illustrate this method. The purpose of this AI is simply to go towards the nearest enemy and shoot at it. When the shield level drops under 20%, the Bot will flee away from the nearest enemy that is targeting it.
+We'll use a very basic AI, `shoot_retire` (included in the `sample_ai` submodule) to illustrate this method. The purpose of this AI is simply to go towards the nearest enemy and shoot at it. When the shield level drops under 20%, the Bot will flee away from the nearest enemy that is targeting it.
 
 .. literalinclude:: ../battlematica/sample_ai/shoot_retire.py
   :language: python
