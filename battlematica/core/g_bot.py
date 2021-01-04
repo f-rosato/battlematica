@@ -64,10 +64,10 @@ class Bot(GameEntity):
             max_shield=200.0,
             size=0.5,
             firing_period=10.0,
-            bullet_spread=2.5,
-            bullet_speed=40.0,
-            bullet_range=800.0,
-            bullet_dmg=70.0,
+            bullet_spread=4,
+            bullet_speed=80.0,
+            bullet_range=300.0,
+            bullet_dmg=12.0,
             walk_speed=3.0,
             crawl_speed=1.5,
             rotation_speed=7.0,
@@ -167,6 +167,9 @@ class Bot(GameEntity):
     @property
     def health_pct(self):
         return self.health / self.max_health
+
+    def distance_from(self, x, y):
+        return distance(self.x, self.y, x, y)
 
     def _bullet_params(self):
 
