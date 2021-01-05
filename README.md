@@ -2,6 +2,8 @@
 
 # Battlematica
 
+![alt text](https://github.com/f-rosato/battlematica/blob/master/battlematica_banner.png)
+
 ## What is this?
 
 Battlematica is an open source Python coding game and research framework created by Federico Rosato. 
@@ -12,7 +14,7 @@ It was mainly inspired by the awesome [Gladiabots](https://gladiabots.com/)
 
 ## What's cool about Battlematica?
  
-- You can define the stats of as many bot "models" as you want;
+- You can define the stats of as many bot classes as you want;
 - you can set up the starting position freely;
 - most importantly, you have complete freedom and control over what's in the AIs.
 
