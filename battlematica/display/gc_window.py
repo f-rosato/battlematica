@@ -7,7 +7,7 @@ import numpy as np
 from battlematica.core.constants import PERIOD_OVER_TOKEN
 from .sprite_m90 import SpriteM90
 
-SCREEN_TITLE = "Bots that beat the shit out of each other"
+SCREEN_TITLE = "Battlematica"
 
 
 # this sprite uses angles with the convention that 0 points right
@@ -24,6 +24,7 @@ class GCWindow(ad.Window):
         self.dp_list = ad.SpriteList()
         self.spritedict = {}
         self.traces = []
+        self.ranges = []
         self.bar_drawers = []
         self.q = q
         self.background = None
@@ -80,6 +81,7 @@ class GCWindow(ad.Window):
 
             if b['ca'] != 'loiter':
                 self.traces.append((b['x'], b['y'], b['tx'], b['ty'], ad.color.RED_DEVIL, 2))
+                self.ranges.append((b['x'], b['y'], b['bullet_range'], (255, 255, 255, 20), 30))
             bd = self.make_bar_drawer(b)
             self.bar_drawers.append(bd)
 
@@ -223,6 +225,11 @@ class GCWindow(ad.Window):
         for t in self.traces:
             ad.draw_line(*t)
         self.traces.clear()
+
+        # draw range_circles
+        for r in self.ranges:
+            ad.draw_circle_filled(*r)
+        self.ranges.clear()
 
         # draw sprites
         self.sprite_list.draw()

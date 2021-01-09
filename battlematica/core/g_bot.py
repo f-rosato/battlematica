@@ -31,7 +31,7 @@ class Bot(GameEntity):
         "max_shield",
         "size",
         "firing_period",
-        "bullet_spread",
+        "bullet_decay",
         "bullet_speed",
         "bullet_range",
         "bullet_dmg",
@@ -64,10 +64,10 @@ class Bot(GameEntity):
             max_shield=200.0,
             size=0.5,
             firing_period=10.0,
-            bullet_spread=4,
+            bullet_decay=0.5,
             bullet_speed=80.0,
             bullet_range=300.0,
-            bullet_dmg=12.0,
+            bullet_dmg=35.0,
             walk_speed=3.0,
             crawl_speed=1.5,
             rotation_speed=7.0,
@@ -86,7 +86,7 @@ class Bot(GameEntity):
         :param max_shield: it's the total shield of the bot.
         :param size: a float indicating the phisical size of the bot (influences hitbox).
         :param firing_period: it's the amount of ticks that the bot needs to load the next shot.
-        :param bullet_spread: angular spread of the bullets. A spread of 0 means perfect aim.
+        :param bullet_decay: terminal effectiveness decay of the bullet at max range. value between 0.0-1.0.
         :param bullet_speed: the speed in u/tick at which the bullet moves
         :param bullet_range: distance in u before the fired bullet becomes ineffective
         :param bullet_dmg: hp/shield damage inflicted by one bullet
@@ -105,7 +105,7 @@ class Bot(GameEntity):
         self.max_health = max_health
         self.max_shield = max_shield
         self.firing_period = firing_period
-        self.bullet_spread = bullet_spread
+        self.bullet_decay = bullet_decay
         self.bullet_speed = bullet_speed
         self.bullet_range = bullet_range
         self.bullet_dmg = bullet_dmg
@@ -190,7 +190,7 @@ class Bot(GameEntity):
             'sprite': g['bullet_type'],
             'size': g['bullet_size'],
             'blast_sprite': g['bullet_blast_type'],
-            'spread': self.bullet_spread}
+            'decay': self.bullet_decay}
 
         return bullet_params
 

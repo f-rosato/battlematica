@@ -1,0 +1,21 @@
+{
+  "max_health": 3000,
+  "max_shield": 5000,
+  "firing_period": 12,
+  "bullet_decay": 0.75,
+  "bullet_speed": 15,
+  "bullet_range": 200,
+  "bullet_dmg": 600,
+  "walk_speed": 2.0,
+  "crawl_speed": 0.5,
+  "rotation_speed": 7,
+  "shield_reload_speed": 27,
+  "shield_reload_dead_time": 180,
+  "size": 0.4,
+  "graphics": {
+      "body_type": 5,
+      "bullet_type": 12,
+      "bullet_size": 0.5,
+      "bullet_blast_type": 1
+  }
+}

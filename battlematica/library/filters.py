@@ -148,3 +148,10 @@ def f_is_carrying():
         return [e for e in elems if e['is_carrying']]
 
     return _f_is_carrying
+
+
+def f_has_uid(uid):
+    def _f_has_uid(elems):
+        return [e for e in elems if e['id'] == uid][0]
+
+    return _f_has_uid
