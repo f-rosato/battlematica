@@ -25,7 +25,11 @@ def f_position_in_ring(x, y, r1, r2):
     def _f_position_in_ring(elems):
         inr2 = f_position_in_circle(x, y, r2)(elems)
         outr1 = f_position_out_of_circle(x, y, r1)(elems)
-        return list(set(inr2).intersection(set(outr1)))
+
+        id_inr2 = [bot['id'] for bot in inr2]
+        id_outr1 = [bot['id'] for bot in outr1]
+        ok_ids = list(set(id_inr2).intersection(set(id_outr1)))
+        return [bot for bot in inr2 if bot['id'] in ok_ids]
 
     return _f_position_in_ring
 
@@ -152,6 +156,6 @@ def f_is_carrying():
 
 def f_has_uid(uid):
     def _f_has_uid(elems):
-        return [e for e in elems if e['id'] == uid][0]
+        return [e for e in elems if e['id'] == uid]
 
     return _f_has_uid

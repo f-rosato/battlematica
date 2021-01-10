@@ -207,6 +207,10 @@ class Bot(GameEntity):
         sn = np.sign(target_rotation)
         self.r = self.r + sn * np.minimum(np.abs(target_rotation), self.rotation_speed)
 
+        # en-passant drop (if bot is loitering it does not drop by default)
+        if self.ca not in ('drop', 'loiter') and self.is_carrying:
+            actions.append(('drop', {}))
+
         # advance to target location
         if self.ca in ('move', 'pick', 'drop'):
             self.last_fire_ticks_ago = 0
@@ -229,7 +233,7 @@ class Bot(GameEntity):
             # pick and unpick
             if self.ca in ('pick', 'drop'):
                 if distance(self.x, self.y, self.tx, self.ty) < PORT_TOLERANCE:
-                    actions = [(self.ca, {})]
+                    actions.append((self.ca, {}))
 
         # shoot/reload
         elif self.ca == 'shoot':
@@ -241,7 +245,7 @@ class Bot(GameEntity):
                     g = defaultdict(lambda: None)
                     g.update(self.graphics)
 
-                    actions = [('fire_round', {})]
+                    actions.append(('fire_round', {}))
                 self.last_fire_ticks_ago += 1
 
             else:
@@ -273,3 +277,4 @@ class Bot(GameEntity):
 
     def _think(self, state):
         self.ca, self.tx, self.ty = self.ai(self, state)
+        self.ca = self.ca.lower()
