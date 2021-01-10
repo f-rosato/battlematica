@@ -1,0 +1,29 @@
+%skip /\s+/;
+@int /\d+/;
+
+@par2: '(' int ',' int ')';
+@par3: '(' int ',' int ',' int ')';
+@par4: '(' int ',' int ',' int ',' int ')';
+
+@xy_negator: "AWAY_FROM";
+@list_negator: "NOT";
+
+@command: "SHOOT" | "MOVE" | "LOITER" | "PICK" | "DROP";
+
+@selector: "WEAKEST" | "NEAREST" | "LEAST_SHIELD";
+@identifier: "BOT" |"ARTIFACT" | "PORT";
+@filter: "ME" | "ENEMY" | "ALLY" | "CARRYING" | "TARGETING" xy
+| "SHIELD_LEVEL" par2 | "IN_RANGE" par2;
+
+@list_descriptor: filter? identifier filter*;
+@qualifying_list: xy_negator? selector list_descriptor;
+@xy: '(' int ',' int ')' | "HERE" | qualifying_list;
+
+@action: command xy;
+
+@condition: '?' list_negator? list_descriptor;
+@conditional: condition '{' statement* '}';
+
+@statement: conditional | action;
+
+program$: statement*;
