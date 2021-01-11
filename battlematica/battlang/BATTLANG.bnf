@@ -1,22 +1,25 @@
 %skip /\s+/;
 @int /\d+/;
 
+@par1: '(' int ')';
 @par2: '(' int ',' int ')';
 @par3: '(' int ',' int ',' int ')';
 @par4: '(' int ',' int ',' int ',' int ')';
 
-@xy_negator: "AWAY_FROM";
+@xy_sign: "AWAY_FROM" | "TO" | "AT";
 @list_negator: "NOT";
 
 @command: "SHOOT" | "MOVE" | "LOITER" | "PICK" | "DROP";
 
-@selector: "WEAKEST" | "NEAREST" | "LEAST_SHIELD";
-@identifier: "BOT" |"ARTIFACT" | "PORT";
+@selector: "WEAKEST" | "NEAREST" | "LEAST_SHIELD" | "CLOSEST_TO" xy
+| "FARTHEST_FROM" xy | "MOST_SHIELD" | "MOST_HEALTH";
+@identifier: "BOT" | "ARTIFACT" | "PORT";
 @filter: "ME" | "ENEMY" | "ALLY" | "CARRYING" | "TARGETING" xy
-| "SHIELD_LEVEL" par2 | "IN_RANGE" par2;
+| "SHIELD_LEVEL" par2 | "HEALTH_LEVEL" par2 | "IN_RANGE" par2
+| "OUT_OF_RANGE" par1 | "SHOOTING" | "LOITERING" | "PICKING";
 
 @list_descriptor: filter? identifier filter*;
-@qualifying_list: xy_negator? selector list_descriptor;
+@qualifying_list: '('? xy_sign? selector list_descriptor ')'?;
 @xy: '(' int ',' int ')' | "HERE" | qualifying_list;
 
 @action: command xy;

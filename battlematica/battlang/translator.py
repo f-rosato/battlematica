@@ -1,132 +1,195 @@
 import os
 from copy import deepcopy
-
-import networkx as nx
 from functools import partial
 
+import networkx as nx
+
 import battlematica.library as lib
-from battlematica.battlang.preparsing import blockify
+from battlematica import StateQuerier
+from battlematica.battlang.mappings import selectors_map, filters_map, identifiers_map
+from battlematica.battlang.preparsing import preparse
 from battlematica.battlang.pynetree import Parser, Node
 from battlematica.battlang.templates import COND_LIST, XY_QUAL_LIST, XY_QUAL_LIST_AWAY, HEAD
-from battlematica import StateQuerier
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(this_dir, 'BATTLANG.bnf'), 'r') as bf:
     BNF_BATTLANG = bf.read()
 
 
-class BattlangTransl:
+def translate_battlang_file(filename):
+    b = BattlangTranslator()
+    return b.from_file(filename)
+
+
+def translate_battlang_string(s, program_name):
+    b = BattlangTranslator()
+    return b.translate(s, program_name)
+
+
+class BattlangTranslator:
 
     def __init__(self):
         self.parser = Parser(BNF_BATTLANG)
-        self.full_prog = ''
-        self.name = ''
+        self._reset_working_vars()
+        self.last_full_prog = None
 
-    def translate(self, program, name):
-        self.name = name
-        preparsed_program = blockify(program)
-        raw_ast = self.parser.parse(preparsed_program)
-        program_ast_graph, node_labels = self.ast_2_nx(raw_ast)
-        ob = self.tree_rewrite(program_ast_graph, node_labels)
-        eval(ob)
-        fn = locals()[self.name]
-        pfn = partial(fn, sq=StateQuerier, lib=lib)
-        return pfn
+    def from_file(self, filename):
+        with open(filename, 'r') as tf:
+            prog = tf.read()
+        return self.translate(prog, os.path.splitext(os.path.basename(filename))[0])
 
     def dump(self, filename):
         with open(filename, 'w') as tf:
-            tf.write(self.full_prog)
+            tf.write(self.last_full_prog)
+
+    def translate(self, program, name):
+        self._name = name
+        preparsed_program = preparse(program)
+        raw_ast = self.parser.parse(preparsed_program)
+        self._build_tree(raw_ast)
+        self._tree_rewrite()
+        object_code = compile(self._full_prog, self._name, 'exec')
+        eval(object_code)
+        translated_fun = locals()[self._name]
+        ai_fun = partial(translated_fun, sq=StateQuerier, lib=lib)
+        self.last_full_prog = self._full_prog
+        self._reset_working_vars()
+        return ai_fun
+
+    def _reset_working_vars(self):
+        self._name = None
+        self._full_prog = None
+        self._tree = None
+        self._root = None
+        self._depth = None
+        self._labels = None
+        self._labels_0 = None
 
     @staticmethod
     def _d100(par):
         ps = par.split(',')
-        ps = [f'{float(p)/100:.2}' for p in ps]
+        try:
+            ps = [f'{float(p)/100:.2}' for p in ps]
+        except ValueError:
+            return ''
         return ', '.join(ps)
 
-    @staticmethod
-    def ast_2_nx(ast_root: Node):
+    def _build_tree(self, ast_root: Node):
 
+        # recursively build graph with node ids and labels
         node_labels = {}
+        ast_tree = nx.DiGraph()
 
         def name(node):
             if node.children:
-                node_labels[id(node)] = node.symbol
+                node_labels[id(node)] = node.symbol  # terminal label is the construct
             else:
-                node_labels[id(node)] = node.match
+                node_labels[id(node)] = node.match  # terminal label is the content
             return id(node)
-
-        gg = nx.DiGraph()
 
         def explore_node(cnode):
             for node in cnode.children:
-                gg.add_edge(name(cnode), name(node))
+                ast_tree.add_edge(name(cnode), name(node))
                 explore_node(node)
 
         explore_node(ast_root)
 
-        return gg, node_labels
-
-    def tree_rewrite(self, ast_graph: nx.DiGraph, labels):
+        self._tree = ast_tree
+        self._labels = node_labels
+        self._labels_0 = node_labels
 
         # find root
-        root = [n for n in ast_graph.nodes if len(nx.ancestors(ast_graph, n)) == 0]
+        root = [n for n in self._tree.nodes if len(nx.ancestors(self._tree, n)) == 0]
         assert len(root) == 1
-        root = root[0]
+        self._root = root[0]
 
         # find max depth
         dd = ['dummy']
-        depth = 1
+        self._depth = 1
         while dd:
-            dd = list(nx.descendants_at_distance(ast_graph, root, depth))
-            depth += 1
+            dd = list(nx.descendants_at_distance(self._tree, self._root, self._depth))
+            self._depth += 1
 
-        # kopi
-        labels0 = deepcopy(labels)
+    def _get_twig(self):
 
-        # this function returns a random twig
-        def get_twig():
+        # take a node from the current lowest depth
+        dd = list(nx.descendants_at_distance(self._tree, self._root, self._depth))
+        while not dd:
+            self._depth -= 1
+            dd = list(nx.descendants_at_distance(self._tree, self._root, self._depth))
+        n = dd[0]
 
-            nonlocal depth
-            nonlocal ast_graph
+        # take its father
+        p = list(self._tree.predecessors(n))
+        assert len(p) <= 1
 
-            # take a node from the current lower depth
-            dd = list(nx.descendants_at_distance(ast_graph, root, depth))
-            while not dd:
-                depth -= 1
-                dd = list(nx.descendants_at_distance(ast_graph, root, depth))
-            n = dd[0]
+        if len(p) == 0:
+            return None, None
 
-            # take its father
-            p = list(ast_graph.predecessors(n))
-            assert len(p) <= 1
+        # list children of the father
+        p = p[0]
+        c = list(self._tree.successors(p))
 
-            if len(p) == 0:
-                return None, None
+        # comment the tree
+        if self._labels_0[p] == 'statement':
+            # on a full statement, we reset the comment because we are abandoning
+            # an inner block
+            self._tree.nodes[p]['comment'] = ''
+        else:
+            comm = ''
+            for x in c:
+                comm += ' '
+                if 'comment' in self._tree.nodes[x].keys():
+                    comm += (self._tree.nodes[x]['comment'])
+                else:
+                    comm += (str(self._labels_0[x]))
+            self._tree.nodes[p]['comment'] = comm[1:]
 
-            # list children of the father
-            p = p[0]
-            c = list(ast_graph.successors(p))
+        # detach the twig from the tree
+        twig = deepcopy(nx.subgraph(self._tree, [p] + c))
+        self._tree.remove_nodes_from(c)
 
-            # comment the tree
-            if labels0[p] == 'statement':
-                # on a full statement, we reset the comment because we are abandoning
-                # an inner block
-                ast_graph.nodes[p]['comment'] = ''
-            else:
-                comm = ''
-                for x in c:
-                    comm += ' '
-                    if 'comment' in ast_graph.nodes[x].keys():
-                        comm += (ast_graph.nodes[x]['comment'])
-                    else:
-                        comm += (str(labels0[x]))
-                ast_graph.nodes[p]['comment'] = comm[1:]
+        return twig, p
 
-            # detach the twig from the tree
-            twig = deepcopy(nx.subgraph(ast_graph, [p] + c))
-            ast_graph.remove_nodes_from(c)
+    @staticmethod
+    def _expand_selector(cnodes):
+        sel = cnodes[0]
+        if sel not in selectors_map.keys():
+            raise NotImplementedError(sel)
+        n_args, fn_name, fn_args = selectors_map[sel]
+        assert len(cnodes) == n_args
 
-            return twig, p
+        for ca in range(1, n_args):
+            fn_args = fn_args.format(**{f'cnodes_{ca}': cnodes[ca]})
+        sub = f'lib.{fn_name}({fn_args})'
+        return sub
+
+    def _expand_filter(self, cnodes):
+        fil = cnodes[0]
+        if fil not in filters_map.keys():
+            raise NotImplementedError(fil)
+        n_args, fn_name, fn_args = filters_map[fil]
+        assert len(cnodes) == n_args
+
+        for ca in range(1, n_args):
+            fn_args = fn_args.format(**{f'd100nodes_{ca}': self._d100(cnodes[ca]),
+                                        f'cnodes_{ca}': cnodes[ca]})
+        sub = f'lib.{fn_name}({fn_args})'
+        return sub
+
+    @staticmethod
+    def _expand_identifier(cnodes):
+        idnt = cnodes[0]
+        if idnt not in identifiers_map.keys():
+            raise NotImplementedError(idnt)
+        n_args, fn_name, fn_args = identifiers_map[idnt]
+        assert n_args == 1  # n_args is kept explicit for homogeneousness
+        assert len(cnodes) == 1
+
+        sub = f'lib.{fn_name}({fn_args})'
+        return sub
+
+    def _tree_rewrite(self):
 
         qual_lists = []
         cl_lists = []
@@ -136,12 +199,12 @@ class BattlangTransl:
         inner_prog = ''
 
         while True:
-            twig, contact_node = get_twig()
+            twig, contact_node = self._get_twig()
             if twig is None:
                 break
 
-            fnode = labels[contact_node]
-            cnodes = [labels[x] for x in list(twig.successors(contact_node))]
+            fnode = self._labels[contact_node]
+            cnodes = [self._labels[x] for x in list(twig.successors(contact_node))]
 
             # bottom-up code generation
 
@@ -173,58 +236,20 @@ class BattlangTransl:
                 sub = cnodes[0]
 
             # case xy_negator
-            elif fnode == 'xy_negator':
+            elif fnode == 'xy_sign':
                 sub = cnodes[0]
 
             # case filter
             elif fnode == 'filter':
-                if cnodes[0] == 'CARRYING':
-                    assert len(cnodes) == 1
-                    sub = f'lib.{lib.f_is_carrying.__name__}()'
-                elif cnodes[0] == 'TARGETING':
-                    assert len(cnodes) == 2  # kw and xy
-                    sub = f'lib.{lib.f_has_target.__name__}({cnodes[1]})'
-                elif cnodes[0] == 'ENEMY':
-                    assert len(cnodes) == 1
-                    sub = f'lib.{lib.f_not_of_teams.__name__}(self.hg, None)'
-                elif cnodes[0] == 'ALLY':
-                    assert len(cnodes) == 1
-                    sub = f'lib.{lib.f_of_teams.__name__}(self.hg)'
-                elif cnodes[0] == 'IN_RANGE':
-                    assert len(cnodes) == 2
-                    sub = f'lib.{lib.f_position_in_ring.__name__}(self.x, self.y, {cnodes[1]})'
-                elif cnodes[0] == 'SHIELD_LEVEL':
-                    assert len(cnodes) == 2
-                    sub = f'lib.{lib.f_shield_between_pct.__name__}({self._d100(cnodes[1])})'
-                elif cnodes[0] == 'ME':
-                    assert len(cnodes) == 1
-                    sub = f'lib.{lib.f_has_uid.__name__}(self.uid)'
-                else:
-                    raise NotImplementedError(cnodes[0])
+                sub = self._expand_filter(cnodes)
 
             # case selector
             elif fnode == 'selector':
-                assert len(cnodes) == 1
-                if cnodes[0] == 'WEAKEST':
-                    sub = f'lib.{lib.s_lowest_abs_health.__name__}()'
-                elif cnodes[0] == 'NEAREST':
-                    sub = f'lib.{lib.s_closest_to_xy.__name__}(self.x, self.y)'
-                elif cnodes[0] == 'LEAST_SHIELD':
-                    sub = f'lib.{lib.s_lowest_abs_shield.__name__}()'
-                else:
-                    raise NotImplementedError(cnodes[0])
+                sub = self._expand_selector(cnodes)
 
             # case identifier
             elif fnode == 'identifier':
-                assert len(cnodes) == 1
-                if cnodes[0] == 'BOT':
-                    sub = f'lib.{lib.i_bots.__name__}()'
-                elif cnodes[0] == 'ARTIFACT':
-                    sub = f'lib.{lib.i_artifacts.__name__}()'
-                elif cnodes[0] == 'PORT':
-                    sub = f'lib.{lib.i_drop_ports.__name__}()'
-                else:
-                    raise NotImplementedError(cnodes[0])
+                sub = self._expand_identifier(cnodes)
 
             # case list_descriptor
             elif fnode == 'list_descriptor':
@@ -232,12 +257,18 @@ class BattlangTransl:
 
             # case qualified list
             elif fnode == 'qualifying_list':
-                comm = ast_graph.nodes[contact_node]['comment']
+                comm = self._tree.nodes[contact_node]['comment']
                 if len(cnodes) == 3:
-                    assert cnodes[0] == 'AWAY_FROM'
-                    qual_lists.append(XY_QUAL_LIST_AWAY.format(series=cnodes[2] + ',\n        ' + cnodes[1],
-                                                               n=ql_n,
-                                                               comment=comm))
+                    if cnodes[0] == 'AWAY_FROM':
+                        qual_lists.append(XY_QUAL_LIST_AWAY.format(series=cnodes[2] + ',\n        ' + cnodes[1],
+                                                                   n=ql_n,
+                                                                   comment=comm))
+                    elif cnodes[0] in ('TO', 'AT'):
+                        qual_lists.append(XY_QUAL_LIST.format(series=cnodes[2] + ',\n        ' + cnodes[1],
+                                                              n=ql_n,
+                                                              comment=comm))
+                    else:
+                        raise NotImplementedError(cnodes[0])
                 else:
                     assert len(cnodes) == 2
                     qual_lists.append(XY_QUAL_LIST.format(series=cnodes[1] + ',\n        ' + cnodes[0],
@@ -248,7 +279,7 @@ class BattlangTransl:
 
             # case action
             elif fnode == 'action':
-                comm = ast_graph.nodes[contact_node]['comment']
+                comm = self._tree.nodes[contact_node]['comment']
                 sub = f'\n# {comm}\nct = validate_command(("{cnodes[0]}", {cnodes[1]}))\nif ct is not None:\n    return ct'
 
             # case condition
@@ -256,10 +287,10 @@ class BattlangTransl:
                 if len(cnodes) == 2:
                     assert cnodes[0] == 'NOT'
                     cl_lists.append(COND_LIST.format(series=cnodes[1], n=cl_n, flip=True,
-                                                     comment=ast_graph.nodes[contact_node]['comment']))
+                                                     comment=self._tree.nodes[contact_node]['comment']))
                 elif len(cnodes) == 1:
                     cl_lists.append(COND_LIST.format(series=cnodes[0], n=cl_n, flip=False,
-                                                     comment=ast_graph.nodes[contact_node]['comment']))
+                                                     comment=self._tree.nodes[contact_node]['comment']))
                 else:
                     raise NotImplementedError
 
@@ -269,7 +300,7 @@ class BattlangTransl:
             # case conditional
             elif fnode == 'conditional':
                 condition = cnodes[0]
-                comm = ast_graph.nodes[contact_node]['comment']
+                comm = self._tree.nodes[contact_node]['comment']
                 lines = []
                 for statement in cnodes[1:]:
                     for subline in statement.splitlines():
@@ -291,7 +322,7 @@ class BattlangTransl:
             else:
                 raise NotImplementedError(fnode)
 
-            labels[contact_node] = sub
+            self._labels[contact_node] = sub
             # print(sub)
 
         full_prog = '\n'.join([*qual_lists, *cl_lists, inner_prog])
@@ -299,17 +330,16 @@ class BattlangTransl:
         # adding base indentation level
         full_prog = '\n'.join(['    ' + line for line in full_prog.splitlines()])
         # header
-        full_prog = HEAD.format(name=self.name, prog=full_prog)
+        full_prog = HEAD.format(name=self._name, prog=full_prog)
 
-        self.full_prog = full_prog
-        object_code = compile(full_prog, self.name, 'exec')
-        return object_code
+        self._full_prog = full_prog
+        return full_prog
 
 
 if __name__ == '__main__':
     with open('../../sample_battlang_ai/ultimate.blng', 'r') as tf:
         prog_string = tf.read()
 
-    t = BattlangTransl()
+    t = BattlangTranslator()
     fn = t.translate(prog_string, 'ultimate')
     print(fn)

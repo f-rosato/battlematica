@@ -1,4 +1,9 @@
-def blockify(s: str, indenter='    ', block_open='{', block_close='}'):
+def preparse(s: str, indenter='    ', block_open='{', block_close='}'):
+
+    s = s.upper()
+
+    # this code turns the python-style indentation into
+    # traditional limited blocks
     preparsed_lines = []
     level = 0
     for line in s.splitlines():
@@ -18,9 +23,15 @@ def blockify(s: str, indenter='    ', block_open='{', block_close='}'):
 
         level = linelevel
 
-    return unsweeten('\n'.join(preparsed_lines))
+    result = '\n'.join(preparsed_lines)
+
+    # unsweetening
+    result = unsweeten(result)
+
+    return result
 
 
 def unsweeten(s: str):
+    # ME is syntactic sugar for the filter+identifier construct ME BOT
+    # that is "a bot whose uid is mine"
     return s.replace('ME', 'ME BOT')
-    # ME is syntactic sugar for filter+i ME BOT, or "a bot whose uid is mine"

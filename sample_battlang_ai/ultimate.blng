@@ -1,21 +1,20 @@
-? ME SHIELD_LEVEL(0,50)
-    ? ENEMY BOT IN_RANGE(0,300) TARGETING HERE
-        ? ME CARRYING
-            DROP HERE
-        MOVE AWAY_FROM NEAREST ENEMY BOT TARGETING HERE
+? me shield_level(0,50)
+    ? enemy bot in_range(0,300) targeting here
+        ? me carrying
+            drop here
+        move away_from nearest enemy bot targeting here
 
+? me carrying
+    drop at nearest ally port
 
-? ME CARRYING
-    DROP NEAREST ALLY PORT
+shoot nearest enemy bot in_range(0,100)
+shoot weakest enemy bot in_range(0,300) shield_level(0,25)
+shoot least_shield enemy bot in_range(0,200)
 
-SHOOT NEAREST ENEMY BOT IN_RANGE(0,100)
-SHOOT WEAKEST ENEMY BOT IN_RANGE(0,300) SHIELD_LEVEL(0,25)
-SHOOT LEAST_SHIELD ENEMY BOT IN_RANGE(0,200)
+? me shield_level(75,100)
+    ? not enemy bot targeting here
+        pick nearest ally artifact
+        move to nearest enemy bot
 
-? ME SHIELD_LEVEL(75,100)
-    ? NOT ENEMY BOT TARGETING HERE
-        PICK NEAREST ALLY ARTIFACT
-        MOVE NEAREST ENEMY BOT
-
-SHOOT LEAST_SHIELD ENEMY BOT IN_RANGE(0,300)
-MOVE NEAREST ENEMY BOT
+shoot least_shield enemy bot in_range(0,300)
+move to nearest enemy bot

@@ -48,6 +48,7 @@ class ParseError(Exception):
 		self.line = row
 		self.column = col
 
+
 class Node(object):
 	"""
 	This is an AST node.
@@ -108,6 +109,7 @@ class Node(object):
 
 		for child in self.children:
 			child.dump(level)
+
 
 class Parser(object):
 	"""

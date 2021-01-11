@@ -150,7 +150,6 @@ def f_is_not_carrying():
 def f_is_carrying():
     def _f_is_carrying(elems):
         return [e for e in elems if e['is_carrying']]
-
     return _f_is_carrying
 
 

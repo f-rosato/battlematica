@@ -44,6 +44,15 @@ def s_lowest_abs_health():  # absolute!
     return _s_lowest_abs_health
 
 
+def s_highest_abs_health():  # absolute!
+
+    @_selector
+    def _s_highest_abs_health(elems):
+        ds = np.max([e['health'] for e in elems])
+        return [e for e in elems if e['health'] == ds][0]
+    return _s_highest_abs_health
+
+
 def s_lowest_abs_shield():  # absolute!
 
     @_selector
@@ -52,3 +61,13 @@ def s_lowest_abs_shield():  # absolute!
         return [e for e in elems if e['shield'] == ds][0]
 
     return _s_lowest_abs_shield
+
+
+def s_highest_abs_shield():  # absolute!
+
+    @_selector
+    def _s_highest_abs_shield(elems):
+        ds = np.max([e['shield'] for e in elems])
+        return [e for e in elems if e['shield'] == ds][0]
+
+    return _s_highest_abs_shield
