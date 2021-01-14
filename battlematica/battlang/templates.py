@@ -1,5 +1,4 @@
-HEAD = \
-"""# generated code
+HEAD = """# generated code
 
 
 def {name}(self, state, sq, lib):
@@ -38,7 +37,7 @@ def target_{n}():
     return tgx_{n}, tgy_{n}"""
 
 
-COND_LIST = """
+LIST_EXISTENCE = """
 # {comment}
 def exists_{n}():
     cl_{n} = query(\n        {series})
@@ -46,3 +45,29 @@ def exists_{n}():
     if {flip}:
         cl_exists_{n} = not cl_exists_{n}
     return cl_exists_{n}"""
+
+
+MULTI_XY_LIST = """
+# {comment}
+def xy_list_{n}():
+    tg_{n} = query(\n        {series})
+    xylist = [(tg['x'], tg['y']) for tg in tg_{n}]
+    return xylist"""
+
+
+VALIDATED_COMMAND = """
+# {comment}
+ct = validate_command(("{command_name}", {command_args}))
+if ct is not None:
+    return ct"""
+
+
+CONDITIONAL = \
+"""if {condition}:  # {comment}
+{body}"""
+
+
+MAIN_PROC = """
+# MAIN PROCEDURE ----------
+
+{body}"""

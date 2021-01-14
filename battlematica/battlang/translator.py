@@ -5,11 +5,11 @@ from functools import partial
 import networkx as nx
 
 import battlematica.library as lib
-from battlematica import StateQuerier
+from battlematica.state_querier import StateQuerier
 from battlematica.battlang.mappings import selectors_map, filters_map, identifiers_map
 from battlematica.battlang.preparsing import preparse
 from battlematica.battlang.pynetree import Parser, Node
-from battlematica.battlang.templates import COND_LIST, XY_QUAL_LIST, XY_QUAL_LIST_AWAY, HEAD
+from battlematica.battlang.templates import *
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(this_dir, 'BATTLANG.bnf'), 'r') as bf:
@@ -64,6 +64,7 @@ class BattlangTranslator:
         self._depth = None
         self._labels = None
         self._labels_0 = None
+        self._an_n = 0
 
     @staticmethod
     def _d100(par):
@@ -177,6 +178,14 @@ class BattlangTranslator:
         sub = f'lib.{fn_name}({fn_args})'
         return sub
 
+    def _expand_anyfilter(self, cnodes):
+        fil = cnodes[0]
+        if fil not in filters_map.keys():
+            raise NotImplementedError(fil)
+        n_args, fn_name, fn_args = filters_map[fil]
+        anyfil = f'lib.{lib.AnyFilter.__name__}(lib.{fn_name})(xy_list_{self._an_n}())'
+        return anyfil
+
     @staticmethod
     def _expand_identifier(cnodes):
         idnt = cnodes[0]
@@ -193,8 +202,10 @@ class BattlangTranslator:
 
         qual_lists = []
         cl_lists = []
+        any_lists = []
         ql_n = 0
         cl_n = 0
+        self._an_n = 0
 
         inner_prog = ''
 
@@ -231,6 +242,10 @@ class BattlangTranslator:
             elif fnode == 'command':
                 sub = cnodes[0]
 
+            # case command
+            elif fnode == 'xy_specified_filter':
+                sub = cnodes[0]
+
             # case list negator
             elif fnode == 'list_negator':
                 sub = cnodes[0]
@@ -238,6 +253,14 @@ class BattlangTranslator:
             # case xy_negator
             elif fnode == 'xy_sign':
                 sub = cnodes[0]
+
+            # case anyfilter
+            elif fnode == 'anyfilter':
+                comm = self._tree.nodes[contact_node]['comment']
+                any_lists.append(MULTI_XY_LIST.format(comment=comm, n=self._an_n,
+                                                      series=cnodes[2] + ',\n        '))
+                sub = self._expand_anyfilter(cnodes)
+                self._an_n += 1
 
             # case filter
             elif fnode == 'filter':
@@ -280,17 +303,19 @@ class BattlangTranslator:
             # case action
             elif fnode == 'action':
                 comm = self._tree.nodes[contact_node]['comment']
-                sub = f'\n# {comm}\nct = validate_command(("{cnodes[0]}", {cnodes[1]}))\nif ct is not None:\n    return ct'
+                sub = VALIDATED_COMMAND.format(comment=comm, command_name=cnodes[0], command_args=cnodes[1])
+                # sub = f'\n# {comm}\nct = validate_command(("{cnodes[0]}", {cnodes[1]}))\nif ct is not None:\n
+                # return ct'
 
             # case condition
             elif fnode == 'condition':
                 if len(cnodes) == 2:
                     assert cnodes[0] == 'NOT'
-                    cl_lists.append(COND_LIST.format(series=cnodes[1], n=cl_n, flip=True,
-                                                     comment=self._tree.nodes[contact_node]['comment']))
+                    cl_lists.append(LIST_EXISTENCE.format(series=cnodes[1], n=cl_n, flip=True,
+                                                          comment=self._tree.nodes[contact_node]['comment']))
                 elif len(cnodes) == 1:
-                    cl_lists.append(COND_LIST.format(series=cnodes[0], n=cl_n, flip=False,
-                                                     comment=self._tree.nodes[contact_node]['comment']))
+                    cl_lists.append(LIST_EXISTENCE.format(series=cnodes[0], n=cl_n, flip=False,
+                                                          comment=self._tree.nodes[contact_node]['comment']))
                 else:
                     raise NotImplementedError
 
@@ -307,7 +332,7 @@ class BattlangTranslator:
                         lines.append('    ' + subline)
 
                 lines = '\n'.join(lines)
-                sub = f'if {condition}:  # {comm}\n{lines}'
+                sub = CONDITIONAL.format(comment=comm, condition=condition, body=lines)
 
             # case statement
             elif fnode == 'statement':
@@ -315,7 +340,7 @@ class BattlangTranslator:
 
             # case root, break
             elif fnode is None:
-                inner_prog = '\n# MAIN PROCEDURE ----------\n\n' + '\n'.join(cnodes)
+                inner_prog = MAIN_PROC.format(body='\n'.join(cnodes))
                 break
 
             # node class unknown
@@ -325,7 +350,7 @@ class BattlangTranslator:
             self._labels[contact_node] = sub
             # print(sub)
 
-        full_prog = '\n'.join([*qual_lists, *cl_lists, inner_prog])
+        full_prog = '\n'.join([*qual_lists, *cl_lists, *any_lists, inner_prog])
 
         # adding base indentation level
         full_prog = '\n'.join(['    ' + line for line in full_prog.splitlines()])
@@ -333,7 +358,6 @@ class BattlangTranslator:
         full_prog = HEAD.format(name=self._name, prog=full_prog)
 
         self._full_prog = full_prog
-        return full_prog
 
 
 if __name__ == '__main__':

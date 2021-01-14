@@ -14,11 +14,18 @@
 @selector: "WEAKEST" | "NEAREST" | "LEAST_SHIELD" | "CLOSEST_TO" xy
 | "FARTHEST_FROM" xy | "MOST_SHIELD" | "MOST_HEALTH";
 @identifier: "BOT" | "ARTIFACT" | "PORT";
-@filter: "ME" | "ENEMY" | "ALLY" | "CARRYING" | "TARGETING" xy
+
+@xy_specified_filter: "TARGETING";
+
+@filter: "ME" | "ENEMY" | "ALLY" | "CARRYING" | xy_specified_filter xy
 | "SHIELD_LEVEL" par2 | "HEALTH_LEVEL" par2 | "IN_RANGE" par2
 | "OUT_OF_RANGE" par1 | "SHOOTING" | "LOITERING" | "PICKING";
 
-@list_descriptor: filter? identifier filter*;
+
+@list_descriptor: filter? identifier (filter|anyfilter)*;
+
+@anyfilter: xy_specified_filter "ANY" list_descriptor;
+
 @qualifying_list: '('? xy_sign? selector list_descriptor ')'?;
 @xy: '(' int ',' int ')' | "HERE" | qualifying_list;
 
