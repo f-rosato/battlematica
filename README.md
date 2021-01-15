@@ -18,8 +18,30 @@ It was mainly inspired by the awesome [Gladiabots](https://gladiabots.com/)
 - you can set up the starting position freely;
 - most importantly, you have complete freedom and control over what's in the AIs.
 
-Battlematica ships with a library of primitives that aids you in writing Gladiabots-style AIs, yet in Battlematica the full power of Python is unlocked to the power user.
+Battlematica ships with a small language, BATTLANG, and a library of Python primitives that aids you in writing Gladiabots-style AIs, yet in Battlematica the full power of Python is unlocked to the power user.
 
+Example BATTLANG script, to give you the flavor:
+
+    ? me shield_level(0,50)
+        ? enemy bot in_range(0,300) targeting here
+            ? me carrying
+                drop here
+            move away_from nearest enemy bot with_target here
+    
+    ? me carrying
+        drop at nearest ally port
+    
+    shoot nearest enemy bot in_range(0,100)
+    shoot weakest enemy bot in_range(0,300) shield_level(0,25)
+    shoot least_shield enemy bot in_range(0,200)
+    
+    ? me shield_level(75,100)
+        ? not enemy bot shooting with_target here
+            pick nearest ally artifact
+            move to nearest enemy bot
+    
+    shoot least_shield enemy bot in_range(0,300)
+    move to nearest enemy bot
 
 ## Can I see the pew-pew?
 
@@ -34,7 +56,7 @@ Battlematica includes a structured .zip archive containing the 2D assets used, b
 
 ## What can I do with it?
 
-You can have fun writing awesome AIs with the included library or experiment freely.
+You can have fun writing awesome AIs with BATTLANG (Battlematica's own language), the included library, or experiment freely.
 Some ideas that you can explore:
 
 - stateful AIs
@@ -49,6 +71,7 @@ Battlematica lives, as I hope, at the intersection between fun and serious resea
 ## How do I use it?
 
 [Read the docs!](https://battlematica.readthedocs.io/en/latest/)
+
 
 ## I'll read later, how do I just start a game?
 

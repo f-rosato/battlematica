@@ -67,3 +67,12 @@ The library submodule contains a collections of higher level functions used in w
    :undoc-members:
    :show-inheritance:
    :exclude-members: distance, wraps, the_correct_turn
+
+
+battlang
+--------
+
+.. automodule:: battlematica.battlang
+   :imported-members:
+   :undoc-members:
+   :members:

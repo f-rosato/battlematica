@@ -1,20 +1,27 @@
 import re
 
 comm = re.compile('#.*')
+multiline = re.compile('\.\.\. *\n')
+FOUR_SPACES = '    '
 
 
-def preparse(s: str, indenter='    ', block_open='{', block_close='}'):
-    s = uncomment(s)
-    s = blockify(s, indenter, block_open, block_close)
-    s = unsweeten(s)
+def preparse(s: str, indenter=FOUR_SPACES, block_open='{', block_close='}'):
+    s = _straighten(s)
+    s = _uncomment(s)
+    s = _blockify(s, indenter, block_open, block_close)
+    s = _unsweeten(s)
     return s
 
 
-def uncomment(s: str):
+def _uncomment(s: str):
     return comm.sub('', s)
 
 
-def blockify(s: str, indenter='    ', block_open='{', block_close='}'):
+def _straighten(s: str):
+    return multiline.sub('', s)
+
+
+def _blockify(s: str, indenter=FOUR_SPACES, block_open='{', block_close='}'):
     s = s.upper()
 
     # this code turns the python-style indentation into
@@ -45,7 +52,7 @@ def blockify(s: str, indenter='    ', block_open='{', block_close='}'):
     return result
 
 
-def unsweeten(s: str):
+def _unsweeten(s: str):
     # ME is syntactic sugar for the filter+identifier construct ME BOT
     # that is "a bot whose uid is mine"
     return s.replace('ME', 'ME BOT')

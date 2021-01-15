@@ -17,11 +17,22 @@ with open(os.path.join(this_dir, 'BATTLANG.bnf'), 'r') as bf:
 
 
 def translate_battlang_file(filename):
+    """Returns an AI function from a file containing a BATTLANG program.
+
+    :param filename: the name of the file
+    """
+
     b = BattlangTranslator()
     return b.from_file(filename)
 
 
 def translate_battlang_string(s, program_name):
+    """Returns an AI function from a string containing a BATTLANG program.
+
+    :param s: string containing the program
+    :param program_name: the __name__ that the function will have
+    """
+
     b = BattlangTranslator()
     return b.translate(s, program_name)
 
@@ -34,15 +45,33 @@ class BattlangTranslator:
         self.last_full_prog = None
 
     def from_file(self, filename):
+        """
+        Translates a BATTLANG program from a file.
+
+        :param filename: the name of the file
+        """
+
         with open(filename, 'r') as tf:
             prog = tf.read()
         return self.translate(prog, os.path.splitext(os.path.basename(filename))[0])
 
     def dump(self, filename):
+        """
+        Writes the latest translated program to a python file.
+
+        :param filename: the name of the output file
+        """
         with open(filename, 'w') as tf:
             tf.write(self.last_full_prog)
 
     def translate(self, program, name):
+        """
+        Returns an AI function from a string containing a BATTLANG program.
+
+        :param program: string containing the program
+        :param name: the __name__ that the function will have
+
+        """
         self._name = name
         preparsed_program = preparse(program)
         raw_ast = self.parser.parse(preparsed_program)

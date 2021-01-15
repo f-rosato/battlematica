@@ -15,7 +15,7 @@ filters_map = {
     'SHOOTING': (1, lib.f_current_action.__name__, '"shoot"'),
     'LOITERING': (1, lib.f_current_action.__name__, '"loiter"'),
     'PICKING': (1, lib.f_current_action.__name__, '"pick"'),
-    'TARGETING': (2, lib.f_has_target.__name__, '{cnodes_1}'),
+    'WITH_TARGET': (2, lib.f_has_target.__name__, '{cnodes_1}'),
     'ENEMY': (1, lib.f_not_of_teams.__name__, 'self.hg, None'),
     'ALLY': (1, lib.f_of_teams.__name__, 'self.hg, None'),
     'IN_RANGE': (2, lib.f_position_in_ring.__name__, 'self.x, self.y, {cnodes_1}'),
