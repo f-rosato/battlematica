@@ -1,10 +1,10 @@
 import numpy as np
 
-from ..core.geometry_primitives import the_correct_turn
+from ..core.geometry_primitives import the_correct_turn, distance
+from ..core.constants import BASE_BOT_RADIUS
 
 
 # team
-
 def f_of_teams(*acceptable_teams):
     def _f_of_teams(elems):
         return [x for x in elems if x['hg'] in acceptable_teams]
@@ -128,7 +128,7 @@ def f_property_between(prop, p1, p2):
 
 def f_has_target(x, y):
     def _f_has_target(elems):
-        return [e for e in elems if e['tx'] is not None and np.isclose(e['tx'], x) and np.isclose(e['ty'], y)]
+        return [e for e in elems if e['tx'] is not None and distance(x, y, e['tx'], e['ty']) < BASE_BOT_RADIUS]
 
     return _f_has_target
 
@@ -150,7 +150,6 @@ def f_is_not_carrying():
 def f_is_carrying():
     def _f_is_carrying(elems):
         return [e for e in elems if e['is_carrying']]
-
     return _f_is_carrying
 
 

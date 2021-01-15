@@ -6,6 +6,7 @@ from multiprocessing import Queue, Event
 
 import numpy as np
 
+from battlematica.battlang import translate_battlang_file
 from .constants import PERIOD_OVER_TOKEN, BASE_BOT_RADIUS, SEED, PORT_TOLERANCE
 from .g_artifact import Artifact
 from .g_bot import Bot
@@ -123,11 +124,17 @@ class GameEngine:
 
     @staticmethod
     def _load_folder_function(folder, name):
-        module_name = os.path.join(folder, name + '.py')
-        spec = importlib.util.spec_from_file_location(name, module_name)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        return getattr(module, name)
+        try:
+            module_name = os.path.join(folder, name + '.py')
+            spec = importlib.util.spec_from_file_location(name, module_name)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            fn = getattr(module, name)
+        except FileNotFoundError:
+            file_name = os.path.join(folder, name + '.blng')
+            fn = translate_battlang_file(file_name)
+
+        return fn
 
     def init_from_files(self, main_game_file):
 

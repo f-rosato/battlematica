@@ -1,0 +1,20 @@
+? me shield_level(0,50)
+    ? enemy bot in_range(0,300) targeting here
+        ? me carrying
+            drop here
+        move away_from nearest enemy bot with_target here
+
+? me carrying
+    drop at nearest ally port
+
+shoot nearest enemy bot in_range(0,100)
+shoot weakest enemy bot in_range(0,300) shield_level(0,25)
+shoot least_shield enemy bot in_range(0,200)
+
+? me shield_level(75,100)
+    ? not enemy bot shooting with_target here
+        pick nearest ally artifact
+        move to nearest enemy bot
+
+shoot least_shield enemy bot in_range(0,300)
+move to nearest enemy bot

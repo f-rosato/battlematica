@@ -207,10 +207,6 @@ class Bot(GameEntity):
         sn = np.sign(target_rotation)
         self.r = self.r + sn * np.minimum(np.abs(target_rotation), self.rotation_speed)
 
-        # en-passant drop (if bot is loitering it does not drop by default)
-        if self.ca not in ('drop', 'loiter') and self.is_carrying:
-            actions.append(('drop', {}))
-
         # advance to target location
         if self.ca in ('move', 'pick', 'drop'):
             self.last_fire_ticks_ago = 0
