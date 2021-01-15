@@ -1,5 +1,20 @@
-def preparse(s: str, indenter='    ', block_open='{', block_close='}'):
+import re
 
+comm = re.compile('#.*')
+
+
+def preparse(s: str, indenter='    ', block_open='{', block_close='}'):
+    s = uncomment(s)
+    s = blockify(s, indenter, block_open, block_close)
+    s = unsweeten(s)
+    return s
+
+
+def uncomment(s: str):
+    return comm.sub('', s)
+
+
+def blockify(s: str, indenter='    ', block_open='{', block_close='}'):
     s = s.upper()
 
     # this code turns the python-style indentation into
@@ -14,6 +29,8 @@ def preparse(s: str, indenter='    ', block_open='{', block_close='}'):
             linelevel += 1
             line = line[len(indenter):]
 
+        # indenters are re-included for clarity. They will be
+        # ignored by the tokenizer anyways.
         if linelevel < level:
             preparsed_lines.append(indenter*linelevel + block_close * (level - linelevel) + line)
         elif linelevel > level:
@@ -24,9 +41,6 @@ def preparse(s: str, indenter='    ', block_open='{', block_close='}'):
         level = linelevel
 
     result = '\n'.join(preparsed_lines)
-
-    # unsweetening
-    result = unsweeten(result)
 
     return result
 
