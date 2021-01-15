@@ -1,11 +1,17 @@
 Writing AIs
 ===========
 
+Writing AIs is the core task in Battlematica.
+
 .. Tip::
 
     It is highly suggested that you read :ref:`Game Mechanics` and :ref:`Game State` before this section.
 
-Writing AIs is the core task in Battlematica. An AI directly usable by the Battlematica core code is simply a function of this form:
+
+Plain Python
+''''''''''''
+
+An AI directly usable by the Battlematica core code is simply a function of this form:
 
 .. code-block:: python
 
@@ -26,6 +32,7 @@ You are free to write whatever you like inside the function! You can write bots 
 
 In addition to this bare-bones, maximum freedom method, which will be most palatable to anyone that wants to use Battlematica for research and experiments, Battlematica offers also more immediacy through the purpose-built languace, BATTLANG.
 
+
 Using BATTLANG
 ''''''''''''''
 
@@ -33,6 +40,8 @@ BATTLANG is a small language that can be used to specify `behavior trees`_. Batt
 
 .. _`behavior trees`: https://en.wikipedia.org/wiki/Behavior_tree_(artificial_intelligence,_robotics_and_control)
 
+.. literalinclude:: ../battlang_example.py
+  :language: python
 
 BATTLANG is designed to offer the most natural way of expression possible. You can write conditions, and the block of conditional statements to be executed under this condition is identified through 4-space indentation, similarly to Python itself. Comments are introduced by "#".
 

@@ -1,8 +1,8 @@
 ? me shield_level(0,50)
-    ? enemy bot in_range(0,300) targeting here
+    ? enemy bot in_range(0,300) shooting with_target here
         ? me carrying
             drop here
-        move away_from nearest enemy bot with_target here
+        move away_from nearest enemy bot shooting with_target here
 
 ? me carrying
     drop at nearest ally port
