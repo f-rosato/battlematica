@@ -181,7 +181,7 @@ class GCWindow(ad.Window):
         reload_base_y = - 40
 
         def bar_drawer():
-            # helf
+            # health
             ad.draw_lrtb_rectangle_filled(x_base, x_base + width, cy + health_base_y + heigth, cy + health_base_y,
                                           ad.color.BLACK)
 
@@ -213,8 +213,8 @@ class GCWindow(ad.Window):
         ad.start_render()
 
         # background
-        for x, y in product(np.arange(0, self.limits[0], self.ac.background_L()), np.arange(0, self.limits[1],
-                                                                                            self.ac.background_L())):
+        for x, y in product(np.arange(0, self.limits[0], self.ac.background_L()),
+                            np.arange(0, self.limits[1], self.ac.background_L())):
             ad.draw_lrwh_rectangle_textured(x + 0, y + 0, self.ac.background_L(), self.ac.background_L(),
                                             self.background)
 

@@ -47,7 +47,7 @@ if __name__ == '__main__':
                      [artifact_high, artifact_low, artifact_ml, artifact_mr],
                      [drop_port])
 
-    # we want to display the game, so we use a BMDisplayProcess
+    # we want to display the game, so we use a GameDisplayProcess
     displayer = GameDisplayProcess(engine, speed=1.0)
     displayer.start()
 
